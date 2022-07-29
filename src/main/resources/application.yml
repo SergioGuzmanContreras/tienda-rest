@@ -1,0 +1,35 @@
+
+spring:
+  profiles:
+    active: dev
+  output:
+    ansi:
+      enabled: always
+  application:
+    name: api-rest
+  banner:
+    location: static/banner.txt
+  datasource:
+    url: jdbc:mysql://144.126.140.30:3307/openwebinars?serverTimezone=GMT-6&createDatabaseIfNotExist=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: admin5263
+    dbcp2:
+      test-while-idle: true
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  jackson:
+    mapper:
+      default-view-inclusion: true
+    
+upload:
+  root:
+    location: ${user.home}/Documents/workspace/openwebinars/upload-dir

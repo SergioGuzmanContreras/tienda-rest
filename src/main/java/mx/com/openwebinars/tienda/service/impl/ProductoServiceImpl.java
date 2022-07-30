@@ -1,7 +1,6 @@
 package mx.com.openwebinars.tienda.service.impl;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -26,11 +25,6 @@ public class ProductoServiceImpl implements ProductoService {
 	@Autowired
 	private ProductoDao productoDao;
 	
-	@Override
-	public List<ProductoEntity> findAll() {
-		return this.productoDao.findAll();
-	}
-
 	@Override
 	public ProductoEntity findById(Long id) {
 		return this.productoDao.findById(id).orElseThrow(() ->new ProductoNotFoundException(id));
@@ -57,16 +51,6 @@ public class ProductoServiceImpl implements ProductoService {
 		if(producto != null)
 			this.productoDao.delete(producto);
 		throw new ProductoNotFoundException(request);
-	}
-
-	@Override
-	public Page<ProductoEntity> findAll(Pageable pageable) {
-		return this.productoDao.findAll(pageable);
-	}
-
-	@Override
-	public Page<ProductoEntity> findByProductoContainsIgnoreCase(String producto, Pageable pageable) {
-		return this.productoDao.findByProductoContainsIgnoreCase(producto, pageable);
 	}
 
 	@Override

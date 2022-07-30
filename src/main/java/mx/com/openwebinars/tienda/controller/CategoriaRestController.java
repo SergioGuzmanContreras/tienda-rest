@@ -55,8 +55,6 @@ public class CategoriaRestController {
 	@GetMapping("/{id}")
 	public ResponseEntity<Categoria> obtenerUno(@PathVariable Long id) {
 		var data = this.service.findById(id);
-		if(data == null)
-			throw new CategoriaNotFoundException(id);
 		var response = this.converter.converterToObject(data);
 		return ResponseEntity.ok(response);
 	}
@@ -66,20 +64,17 @@ public class CategoriaRestController {
 	public ResponseEntity<Categoria> nueva(@RequestBody Categoria request) {
 		log.info("request {}", request);
 		var transform = this.converter.converterToEntity(request);
-		var data = this.service.save(transform);
-		if(data == null)
-			throw new CategoriaNotFoundException(request.getCategoria());
-		var response = this.converter.converterTo(data);
+		var response = this.converter.converterTo(this.service.save(transform));
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
 
 	@PutMapping
 	@ResponseBody
-	public ResponseEntity<CategoriaEntity> editarCategoria(@RequestBody CategoriaEntity request) {
-		var response = this.service.update(request);
-		if(response == null)
-			throw new CategoriaNotFoundException(request.getId());
+	public ResponseEntity<Categoria> editarCategoria(@RequestBody Categoria request) {
+		log.info("request {}", request);
+		var transform = this.converter.converterTo(request);
+		var response = this.converter.converterTo(this.service.update(transform));
 		return ResponseEntity.ok(response);
 	}
 

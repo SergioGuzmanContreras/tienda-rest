@@ -18,7 +18,7 @@ public class CategoriaServiceImpl implements CategoriaService{
 	
 	@Override
 	public CategoriaEntity findById(Long id) {
-		return this.categoriaDao.findById(id).orElse(null);
+		return this.categoriaDao.findById(id).orElseThrow(() -> new CategoriaNotFoundException(id));
 	}
 
 	@Override

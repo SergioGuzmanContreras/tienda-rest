@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import mx.com.openwebinars.tienda.dao.entity.ProductoEntity;
 import mx.com.openwebinars.tienda.models.Producto;
-import mx.com.openwebinars.tienda.models.ProductoCreate;
 
 @Component
 public class ProductoConverter {
@@ -14,12 +13,12 @@ public class ProductoConverter {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	public Producto converterTo(ProductoEntity productoEntity) {
-		return modelMapper.map(productoEntity, Producto.class);
+	public Producto converterTo(ProductoEntity producto) {
+		return modelMapper.map(producto, Producto.class);
 	}
 
-	public ProductoEntity converterTo(ProductoCreate productoCreate) {
-		return modelMapper.map(productoCreate, ProductoEntity.class);
+	public ProductoEntity converterTo(Producto producto) {
+		return modelMapper.map(producto, ProductoEntity.class);
 	}
 
 	public Producto converterLoombok(ProductoEntity producto) {

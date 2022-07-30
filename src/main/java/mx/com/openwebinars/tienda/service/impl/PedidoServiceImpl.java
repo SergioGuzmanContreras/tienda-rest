@@ -37,8 +37,11 @@ public class PedidoServiceImpl implements PedidoService {
 	}
 
 	@Override
-	public Page<PedidoEntity> findAll(Pageable pageable) {
-		return this.pedidos.findAll(pageable);
+	public Page<PedidoEntity> findAll(Pageable pageable) {		
+		var data = this.pedidos.findAll(pageable);
+		if(data.isEmpty())
+			return Page.empty();
+		return data;
 	}
 
 	@Override
@@ -76,22 +79,6 @@ public class PedidoServiceImpl implements PedidoService {
 					return criteriaBuilder.isTrue(criteriaBuilder.literal(true));
 			}
 		};
-/*
-		var precioMenorQue = new Specification<ProductoEntity>() {
-			private static final long serialVersionUID = -6425933618995534912L;
-			@Override
-			public Predicate toPredicate(Root<ProductoEntity> root, CriteriaQuery<?> query,
-					CriteriaBuilder criteriaBuilder) {
-				if(precio.isPresent())
-					return criteriaBuilder.lessThanOrEqualTo(root.get("precio"), precio.get());
-				else
-					return criteriaBuilder.isTrue(criteriaBuilder.literal(true));
-			}
-		
-		};
-
-		var specFinal = specNombreProducto.and(precioMenorQue); 
-*/
 		return this.pedidos.findAll(specCliente, pageable);
 	}
 

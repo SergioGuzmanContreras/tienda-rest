@@ -1,13 +1,14 @@
 package mx.com.openwebinars.tienda.service.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import mx.com.openwebinars.tienda.dao.CategoriaDao;
 import mx.com.openwebinars.tienda.dao.entity.CategoriaEntity;
 import mx.com.openwebinars.tienda.service.CategoriaService;
+import mx.com.openwebinars.tienda.utils.exceptions.CategoriaNotFoundException;
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService{
@@ -16,25 +17,27 @@ public class CategoriaServiceImpl implements CategoriaService{
 	private CategoriaDao categoriaDao;
 	
 	@Override
-	public List<CategoriaEntity> findAll() {
-		return this.categoriaDao.findAll();
-	}
-
-	@Override
 	public CategoriaEntity findById(Long id) {
 		return this.categoriaDao.findById(id).orElse(null);
 	}
 
 	@Override
 	public CategoriaEntity save(CategoriaEntity request) {
-		return this.categoriaDao.save(request);
+		var data = this.categoriaDao.findByCategoria(request.getCategoria());
+		if(data == null)
+			return this.categoriaDao.save(request);
+		throw new CategoriaNotFoundException(data);
 	}
 
 	@Override
 	public CategoriaEntity update(CategoriaEntity request) {
-		if(this.categoriaDao.existsById(request.getId()))
-			return this.categoriaDao.save(request);
-		return null;
+		if(this.categoriaDao.existsById(request.getId())) {
+			var data = this.categoriaDao.findByCategoria(request.getCategoria());
+			if(data == null)
+				return this.categoriaDao.save(request);
+			throw new CategoriaNotFoundException(data);
+		}
+		throw new CategoriaNotFoundException(request.getId());
 	}
 
 	@Override
@@ -42,6 +45,13 @@ public class CategoriaServiceImpl implements CategoriaService{
 		var producto = this.findById(request);
 		if(producto != null)
 			this.categoriaDao.delete(producto);
+		else 
+			throw new CategoriaNotFoundException(request);
+	}
+
+	@Override
+	public Page<CategoriaEntity> findAll(Pageable pageable) {
+		return this.categoriaDao.findAll(pageable);
 	}
 	
 }

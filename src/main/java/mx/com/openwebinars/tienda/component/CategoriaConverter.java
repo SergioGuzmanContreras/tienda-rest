@@ -14,7 +14,26 @@ public class CategoriaConverter {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	public Categoria converterTo(CategoriaEntity categoriaEntity) {
-		return modelMapper.map(categoriaEntity, Categoria.class);
+	public Categoria converterTo(CategoriaEntity categoria) {
+		return modelMapper.map(categoria, Categoria.class);
 	}
+
+	public CategoriaEntity converterTo(Categoria categoria) {
+		return modelMapper.map(categoria, CategoriaEntity.class);
+	}
+
+	public Categoria converterToObject(CategoriaEntity categoria) {
+		return Categoria.builder()
+				.id(categoria.getId())
+				.categoria(categoria.getCategoria())
+				.build();
+	}
+
+	public CategoriaEntity converterToEntity(Categoria categoria) {
+		return CategoriaEntity.builder()
+				.id(categoria.getId())
+				.categoria(categoria.getCategoria())
+			.build();
+	}
+
 }

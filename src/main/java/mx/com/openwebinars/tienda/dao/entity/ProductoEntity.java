@@ -44,4 +44,5 @@ public class ProductoEntity {
 	@ManyToOne
 	@JoinColumn(name = "idCategoria", referencedColumnName = "idCategoria", nullable = false, foreignKey=@ForeignKey(name = "fk_categorias_productos"))
 	private CategoriaEntity categoria;
+	
 }

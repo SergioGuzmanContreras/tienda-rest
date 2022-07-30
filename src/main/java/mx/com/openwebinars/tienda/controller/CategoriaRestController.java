@@ -1,8 +1,10 @@
 package mx.com.openwebinars.tienda.controller;
 
-import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,69 +12,81 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import mx.com.openwebinars.tienda.component.CategoriaConverter;
+import mx.com.openwebinars.tienda.component.PaginationLinksUtils;
 import mx.com.openwebinars.tienda.dao.entity.CategoriaEntity;
+import mx.com.openwebinars.tienda.models.Categoria;
 import mx.com.openwebinars.tienda.service.CategoriaService;
+import mx.com.openwebinars.tienda.utils.exceptions.CategoriaNotFoundException;
 
+@Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/categorias")
 public class CategoriaRestController {
 
-	@Autowired
-	private CategoriaService CategoriaService;
-	
-	@Autowired
-	private CategoriaConverter CategoriaConverter;
-	
+	private final CategoriaService service;
+	private final CategoriaConverter converter;	
+	private final PaginationLinksUtils pagination;
+
 	@GetMapping
 	@ResponseBody
-	public ResponseEntity<?>  obtenerTodos() {
-		var data = this.CategoriaService.findAll();
+	public ResponseEntity<Page<Categoria>>  obtenerTodos(@PageableDefault(size = 10, page= 0) Pageable pageable, HttpServletRequest request){
+		var data = this.service.findAll(pageable);
 		if(data.isEmpty())
-			return ResponseEntity.notFound().build();
+			throw new CategoriaNotFoundException();
 		else {
-			var response = data.stream().map(this.CategoriaConverter::converterTo).collect(Collectors.toList());		
-			return ResponseEntity.ok(response);
+			var response = data.map(this.converter::converterToObject);		
+			var uriBuilder = UriComponentsBuilder.fromHttpUrl(request.getRequestURL().toString());
+			return ResponseEntity.ok().header("link", this.pagination.createLinkHeader(response, uriBuilder)).body(response);
 		}
+	
 	}
 	
 	@ResponseBody
 	@GetMapping("/{id}")
-	public ResponseEntity<CategoriaEntity> obtenerUno(@PathVariable Long id) {
-		var response = this.CategoriaService.findById(id);
-		if(response == null)
-			return ResponseEntity.notFound().build();
+	public ResponseEntity<Categoria> obtenerUno(@PathVariable Long id) {
+		var data = this.service.findById(id);
+		if(data == null)
+			throw new CategoriaNotFoundException(id);
+		var response = this.converter.converterToObject(data);
 		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping
 	@ResponseBody
-	public ResponseEntity<CategoriaEntity> nuevoCategoria(@RequestBody CategoriaEntity request) {
-		var response = this.CategoriaService.save(request);
-		if(response == null)
-			return ResponseEntity.notFound().build();
+	public ResponseEntity<Categoria> nueva(@RequestBody Categoria request) {
+		log.info("request {}", request);
+		var transform = this.converter.converterToEntity(request);
+		var data = this.service.save(transform);
+		if(data == null)
+			throw new CategoriaNotFoundException(request.getCategoria());
+		var response = this.converter.converterTo(data);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
+
+	@PutMapping
 	@ResponseBody
-	@PutMapping("/{id}")
-	public ResponseEntity<CategoriaEntity> editarCategoria(@RequestBody CategoriaEntity request, @PathVariable Long id) {
-		request.setId(id);
-		var response = this.CategoriaService.update(request);
+	public ResponseEntity<CategoriaEntity> editarCategoria(@RequestBody CategoriaEntity request) {
+		var response = this.service.update(request);
 		if(response == null)
-			return ResponseEntity.notFound().build();
+			throw new CategoriaNotFoundException(request.getId());
 		return ResponseEntity.ok(response);
 	}
 
 	@ResponseBody
 	@DeleteMapping("/{id}")
 	public ResponseEntity<CategoriaEntity> borrarCategoria(@PathVariable Long id) {
-		this.CategoriaService.delete(id);
+		this.service.delete(id);
 		return ResponseEntity.noContent().build();
 	}
 

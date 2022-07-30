@@ -19,8 +19,8 @@ public class BeanConfig {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("*")
-				.allowedOrigins("http://localhost:9001")
-				.allowedMethods("GET");
+				.allowedOrigins("*")
+				.allowedMethods("GET", "POST", "PUT", "DELETE");
 			}
 		
 		};

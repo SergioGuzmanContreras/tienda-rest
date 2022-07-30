@@ -7,4 +7,6 @@ import mx.com.openwebinars.tienda.dao.entity.CategoriaEntity;
 
 public interface CategoriaDao extends JpaRepository<CategoriaEntity, Long>{
 
+	CategoriaEntity findByCategoria(String categoria);
+
 }

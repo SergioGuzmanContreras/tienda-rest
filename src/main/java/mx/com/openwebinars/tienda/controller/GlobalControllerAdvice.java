@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import mx.com.openwebinars.tienda.utils.exceptions.CategoriaNotFoundException;
 import mx.com.openwebinars.tienda.utils.exceptions.ProductoNotFoundException;
 import mx.com.openwebinars.tienda.utils.exceptions.SearchProductoNotResultException;
 import mx.com.openwebinars.tienda.models.Error;
@@ -38,5 +39,15 @@ public class GlobalControllerAdvice  extends ResponseEntityExceptionHandler{
 		return ResponseEntity.status(status).headers(headers).body(error);		
 	}
 
+	
+	@ExceptionHandler({ CategoriaNotFoundException.class})
+	public ResponseEntity<Error> handlerCategoriaNoEncontrada(CategoriaNotFoundException ex){		
+		var error = Error.builder()
+				.status(HttpStatus.NOT_FOUND)
+				.date(LocalDateTime.now())
+				.message(ex.getMessage())
+				.build();
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+	}
 
 }

@@ -31,7 +31,7 @@ public class LineaPedidoEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "idLinePedido")
 	private Long id;
-/*	
+
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idProducto", referencedColumnName = "idProducto", nullable = false, foreignKey=@ForeignKey(name = "fk_pedidos_productos"))
 	private ProductoEntity producto;
@@ -42,7 +42,7 @@ public class LineaPedidoEntity {
 	
 	@Column(name = "cantidad", nullable= false) 
 	private Integer cantidad;
-	*/
+
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "idPedido", referencedColumnName = "idPedido", nullable = false, foreignKey=@ForeignKey(name = "fk_pedidos_pedido"))
 	private PedidoEntity pedido;

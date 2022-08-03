@@ -15,13 +15,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @Entity
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "lineaPedido")
@@ -29,7 +29,7 @@ public class LineaPedidoEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "idLinePedido")
+	@Column(name = "idLineaPedido")
 	private Long id;
 
 	@OneToOne(fetch = FetchType.EAGER)
